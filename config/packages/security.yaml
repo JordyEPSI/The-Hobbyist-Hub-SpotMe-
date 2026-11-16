@@ -32,6 +32,7 @@ security:
             logout:
                 path: app_deconnexion
                 target: app_accueil
+                enable_csrf: true # empêche un site tiers de déconnecter un membre
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 semaine

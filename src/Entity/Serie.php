@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SerieRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SerieRepository::class)]
 class Serie
@@ -15,19 +16,26 @@ class Serie
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Positive]
     private ?int $numeroSerie = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Range(min: 1, max: 1000)]
     private ?int $repetitions = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 0, max: 1000)]
     private ?string $chargeKg = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(min: 1, max: 10)]
     private ?int $rpe = null;
 
     #[ORM\ManyToOne(inversedBy: 'series')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Seance $seance = null;
 
     #[ORM\ManyToOne(inversedBy: 'series')]

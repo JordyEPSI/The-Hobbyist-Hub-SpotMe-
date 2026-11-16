@@ -4,8 +4,11 @@ namespace App\Entity;
 
 use App\Repository\CiblerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CiblerRepository::class)]
+#[UniqueEntity(fields: ['exercice', 'groupeMusculaire'], message: 'Ce muscle est déjà associé à cet exercice.')]
 class Cibler
 {
     // Association CIBLER : identifiée par le couple (exercice, groupe musculaire)
@@ -20,6 +23,7 @@ class Cibler
     private ?GroupeMusculaire $groupeMusculaire = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
     private ?bool $estPrincipal = null;
 
     public function getExercice(): ?Exercice

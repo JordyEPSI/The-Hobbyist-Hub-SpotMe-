@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MensurationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MensurationRepository::class)]
 class Mensuration
@@ -15,22 +16,28 @@ class Mensuration
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\NotNull]
     private ?\DateTimeImmutable $dateMesure = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 20, max: 400)]
     private ?string $poidsKg = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 1, nullable: true)]
+    #[Assert\Range(min: 1, max: 70)]
     private ?string $masseGrassePct = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 1, nullable: true)]
+    #[Assert\Range(min: 30, max: 250)]
     private ?string $tourTailleCm = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 1, nullable: true)]
+    #[Assert\Range(min: 10, max: 100)]
     private ?string $tourBrasCm = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateur $utilisateur = null;
 
     public function getId(): ?int

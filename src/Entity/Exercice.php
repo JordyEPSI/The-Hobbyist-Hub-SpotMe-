@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ExerciceRepository::class)]
 class Exercice
@@ -17,21 +18,28 @@ class Exercice
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 120)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 120)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $image = null;
 
     #[ORM\Column(length: 30, nullable: true)]
+    #[Assert\Length(max: 30)]
     private ?string $difficulte = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
     private ?int $idWger = null;
 
     #[ORM\Column]
@@ -40,6 +48,7 @@ class Exercice
     // UTILISER (1,1) : un exercice utilise un seul matériel
     #[ORM\ManyToOne(inversedBy: 'exercices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Choisis un matériel.')]
     private ?Materiel $materiel = null;
 
     /**

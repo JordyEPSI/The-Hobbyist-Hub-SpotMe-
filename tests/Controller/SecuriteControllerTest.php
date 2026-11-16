@@ -2,6 +2,10 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\JourProgramme;
+use App\Entity\Mensuration;
+use App\Entity\Programme;
+use App\Entity\Seance;
 use App\Entity\Utilisateur;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -164,6 +168,62 @@ class SecuriteControllerTest extends WebTestCase
         self::assertResponseRedirects('/admin/utilisateurs');
         $this->em->clear();
         self::assertTrue($this->em->find(Utilisateur::class, $membre->getId())->isAdmin());
+    }
+
+    public function testMessageDErreurDeConnexionEnFrancais(): void
+    {
+        $this->creerUtilisateur('membre@exemple.fr', 'membre');
+
+        $this->client->request('GET', '/connexion');
+        $this->client->submitForm('Se connecter', ['email' => 'membre@exemple.fr', 'mot_de_passe' => 'mauvais']);
+        $this->client->followRedirect();
+
+        self::assertSelectorTextContains('.flash-erreur', 'Identifiants invalides.');
+    }
+
+    public function testDeconnexionAvecLeBouton(): void
+    {
+        $this->client->loginUser($this->creerUtilisateur('membre@exemple.fr', 'membre'));
+
+        $this->client->request('GET', '/');
+        $this->client->submitForm('Déconnexion');
+
+        self::assertResponseRedirects('/');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.nav', 'Connexion');
+    }
+
+    public function testDeconnexionRefuseeParUnSimpleLien(): void
+    {
+        $this->client->loginUser($this->creerUtilisateur('membre@exemple.fr', 'membre'));
+        $this->client->request('GET', '/deconnexion');
+
+        self::assertResponseStatusCodeSame(405);
+    }
+
+    public function testAdminPeutSupprimerUnMembreQuiADesDonnees(): void
+    {
+        $this->client->loginUser($this->creerUtilisateur('admin@exemple.fr', 'admin', true));
+        $membre = $this->creerUtilisateur('membre@exemple.fr', 'membre');
+
+        $programme = (new Programme())->setTitre('PPL')->setSlug('ppl')->setEstPublic(true)
+            ->setDateCreation(new \DateTimeImmutable())->setUtilisateur($membre);
+        $jour = (new JourProgramme())->setNom('Push')->setPosition(0)->setProgramme($programme);
+        $seance = (new Seance())->setDateSeance(new \DateTimeImmutable())->setUtilisateur($membre)->setJourProgramme($jour);
+        $mensuration = (new Mensuration())->setDateMesure(new \DateTimeImmutable())->setPoidsKg('80')->setUtilisateur($membre);
+        foreach ([$programme, $jour, $seance, $mensuration] as $entite) {
+            $this->em->persist($entite);
+        }
+        $this->em->flush();
+        $idProgramme = $programme->getId();
+
+        $this->client->request('GET', '/admin/utilisateurs');
+        $this->client->submitForm('Supprimer');
+
+        self::assertResponseRedirects('/admin/utilisateurs');
+        $this->em->clear();
+        self::assertNull($this->em->find(Utilisateur::class, $membre->getId()));
+        self::assertNull($this->em->find(Programme::class, $idProgramme), 'Les programmes du membre sont supprimés avec lui');
     }
 
     public function testActionAdminRefuseeSansJetonCsrf(): void

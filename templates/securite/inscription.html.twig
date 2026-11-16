@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <section class="carte carte-formulaire">
+        <h1>Créer un compte</h1>
+
+        {{ form_start(form) }}
+            {{ form_row(form.pseudo) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.motDePasseClair.first) }}
+            {{ form_row(form.motDePasseClair.second) }}
+            {{ form_errors(form.motDePasseClair) }}
+
+            <button type="submit" class="bouton">S'inscrire</button>
+        {{ form_end(form) }}
+
+        <p>Déjà inscrit ? <a href="{{ path('app_connexion') }}">Connecte-toi</a></p>
+    </section>
+{% endblock %}

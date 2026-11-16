@@ -1,0 +1,18 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block admin_contenu %}
+    <h1>Tableau de bord</h1>
+
+    <div class="chiffres">
+        <div class="chiffre">
+            <span class="chiffre-valeur">{{ nb_utilisateurs }}</span>
+            <span class="chiffre-libelle">membres inscrits</span>
+        </div>
+        <div class="chiffre">
+            <span class="chiffre-valeur">{{ nb_admins }}</span>
+            <span class="chiffre-libelle">administrateurs</span>
+        </div>
+    </div>
+{% endblock %}

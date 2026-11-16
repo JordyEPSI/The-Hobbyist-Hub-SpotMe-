@@ -37,11 +37,10 @@ class Exercice
     #[ORM\Column]
     private ?\DateTimeImmutable $dateCreation = null;
 
-    /**
-     * @var Collection<int, Materiel>
-     */
-    #[ORM\ManyToMany(targetEntity: Materiel::class, inversedBy: 'exercices')]
-    private Collection $materiels;
+    // UTILISER (1,1) : un exercice utilise un seul matériel
+    #[ORM\ManyToOne(inversedBy: 'exercices')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Materiel $materiel = null;
 
     /**
      * @var Collection<int, Cibler>
@@ -63,7 +62,6 @@ class Exercice
 
     public function __construct()
     {
-        $this->materiels = new ArrayCollection();
         $this->ciblers = new ArrayCollection();
         $this->exerciceProgrammes = new ArrayCollection();
         $this->series = new ArrayCollection();
@@ -158,26 +156,14 @@ class Exercice
         return $this;
     }
 
-    /**
-     * @return Collection<int, Materiel>
-     */
-    public function getMateriels(): Collection
+    public function getMateriel(): ?Materiel
     {
-        return $this->materiels;
+        return $this->materiel;
     }
 
-    public function addMateriel(Materiel $materiel): static
+    public function setMateriel(?Materiel $materiel): static
     {
-        if (!$this->materiels->contains($materiel)) {
-            $this->materiels->add($materiel);
-        }
-
-        return $this;
-    }
-
-    public function removeMateriel(Materiel $materiel): static
-    {
-        $this->materiels->removeElement($materiel);
+        $this->materiel = $materiel;
 
         return $this;
     }

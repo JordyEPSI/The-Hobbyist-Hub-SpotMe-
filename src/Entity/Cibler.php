@@ -8,26 +8,19 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CiblerRepository::class)]
 class Cibler
 {
+    // Association CIBLER : identifiée par le couple (exercice, groupe musculaire)
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(inversedBy: 'ciblers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Exercice $exercice = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'ciblers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?GroupeMusculaire $groupeMusculaire = null;
 
     #[ORM\Column]
     private ?bool $estPrincipal = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getExercice(): ?Exercice
     {

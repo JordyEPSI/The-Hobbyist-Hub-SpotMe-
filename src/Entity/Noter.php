@@ -8,15 +8,13 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: NoterRepository::class)]
 class Noter
 {
+    // Association NOTER : identifiée par le couple (utilisateur, programme)
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'notes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Programme $programme = null;
@@ -26,11 +24,6 @@ class Noter
 
     #[ORM\Column]
     private ?\DateTimeImmutable $dateNote = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getUtilisateur(): ?Utilisateur
     {

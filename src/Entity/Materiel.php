@@ -24,7 +24,7 @@ class Materiel
     /**
      * @var Collection<int, Exercice>
      */
-    #[ORM\ManyToMany(targetEntity: Exercice::class, mappedBy: 'materiels')]
+    #[ORM\OneToMany(targetEntity: Exercice::class, mappedBy: 'materiel')]
     private Collection $exercices;
 
     public function __construct()
@@ -73,7 +73,7 @@ class Materiel
     {
         if (!$this->exercices->contains($exercice)) {
             $this->exercices->add($exercice);
-            $exercice->addMateriel($this);
+            $exercice->setMateriel($this);
         }
 
         return $this;
@@ -81,8 +81,8 @@ class Materiel
 
     public function removeExercice(Exercice $exercice): static
     {
-        if ($this->exercices->removeElement($exercice)) {
-            $exercice->removeMateriel($this);
+        if ($this->exercices->removeElement($exercice) && $exercice->getMateriel() === $this) {
+            $exercice->setMateriel(null);
         }
 
         return $this;

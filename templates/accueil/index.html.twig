@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <section class="carte">
+        <h1>Bienvenue sur SpotMe</h1>
+        <p>Crée tes programmes, note tes séances et suis ta progression avec la communauté.</p>
+
+        {% if app.user %}
+            <p>Content de te revoir, <strong>{{ app.user.pseudo }}</strong> !</p>
+        {% else %}
+            <p>
+                <a class="bouton" href="{{ path('app_inscription') }}">Créer un compte</a>
+                <a href="{{ path('app_connexion') }}">J'ai déjà un compte</a>
+            </p>
+        {% endif %}
+    </section>
+{% endblock %}

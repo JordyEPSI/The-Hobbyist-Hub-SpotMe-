@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+    <section class="carte carte-formulaire">
+        <h1>Connexion</h1>
+
+        {% if erreur %}
+            <div class="flash flash-erreur" role="alert">
+                {{ erreur.messageKey|trans(erreur.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_connexion') }}">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ dernier_email }}" autocomplete="email" required autofocus>
+
+            <label for="mot_de_passe">Mot de passe</label>
+            <input type="password" id="mot_de_passe" name="mot_de_passe" autocomplete="current-password" required>
+
+            <label class="case">
+                <input type="checkbox" name="_remember_me"> Rester connecté
+            </label>
+
+            <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+            <button type="submit" class="bouton">Se connecter</button>
+        </form>
+
+        <p>Pas encore de compte ? <a href="{{ path('app_inscription') }}">Inscris-toi</a></p>
+    </section>
+{% endblock %}

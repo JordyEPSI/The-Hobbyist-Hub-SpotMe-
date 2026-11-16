@@ -31,7 +31,7 @@ final class Version20261116135505 extends AbstractMigration
         $this->addSql('ALTER TABLE noter DROP id, DROP PRIMARY KEY, ADD PRIMARY KEY (utilisateur_id, programme_id)');
         $this->addSql('ALTER TABLE utilisateur DROP est_actif, CHANGE password mot_de_passe VARCHAR(255) NOT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1D1C63B386CC499D ON utilisateur (pseudo)');
-        $this->addSql('ALTER TABLE utilisateur RENAME INDEX uniq_identifier_email TO UNIQ_1D1C63B3E7927C74');
+        $this->addSql('ALTER TABLE utilisateur DROP INDEX uniq_identifier_email, ADD UNIQUE INDEX UNIQ_1D1C63B3E7927C74 (email)');
     }
 
     public function down(Schema $schema): void

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProgrammeRepository::class)]
 class Programme
@@ -17,21 +18,29 @@ class Programme
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private ?string $titre = null;
 
     #[ORM\Column(length: 120)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 120)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 5000)]
     private ?string $description = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $objectif = null;
 
     #[ORM\Column(length: 30, nullable: true)]
+    #[Assert\Length(max: 30)]
     private ?string $niveau = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
     private ?bool $estPublic = null;
 
     #[ORM\Column]
@@ -41,7 +50,7 @@ class Programme
     private ?\DateTime $dateModification = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Utilisateur $utilisateur = null;
 
     /**

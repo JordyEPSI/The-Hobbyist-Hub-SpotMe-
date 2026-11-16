@@ -27,7 +27,7 @@ class SecuriteController extends AbstractController
         ]);
     }
 
-    #[Route('/deconnexion', name: 'app_deconnexion')]
+    #[Route('/deconnexion', name: 'app_deconnexion', methods: ['POST'])]
     public function deconnexion(): never
     {
         // Intercepté par le pare-feu (voir config/packages/security.yaml).

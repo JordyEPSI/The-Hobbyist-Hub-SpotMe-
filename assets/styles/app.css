@@ -36,6 +36,8 @@ a { color: var(--accent-fonce); }
 .nav { display: flex; align-items: center; gap: 16px; }
 .nav a { text-decoration: none; }
 .nav-pseudo { color: var(--texte-doux); }
+.form-deconnexion { margin: 0; }
+.lien-bouton { background: none; border: 0; padding: 0; font: inherit; color: var(--accent-fonce); cursor: pointer; }
 
 .contenu { max-width: 1100px; margin: 32px auto; padding: 0 16px; }
 

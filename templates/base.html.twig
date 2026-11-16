@@ -22,7 +22,10 @@
                         <a href="{{ path('admin_tableau_de_bord') }}">Administration</a>
                     {% endif %}
                     <span class="nav-pseudo">{{ app.user.pseudo }}</span>
-                    <a href="{{ path('app_deconnexion') }}">Déconnexion</a>
+                    <form method="post" action="{{ path('app_deconnexion') }}" class="form-deconnexion">
+                        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('logout') }}">
+                        <button type="submit" class="lien-bouton">Déconnexion</button>
+                    </form>
                 {% else %}
                     <a href="{{ path('app_connexion') }}">Connexion</a>
                     <a class="bouton" href="{{ path('app_inscription') }}">Inscription</a>

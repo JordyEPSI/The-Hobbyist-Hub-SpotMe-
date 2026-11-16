@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ExerciceProgrammeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ExerciceProgrammeRepository::class)]
 class ExerciceProgramme
@@ -15,22 +16,31 @@ class ExerciceProgramme
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private ?int $position = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Range(min: 1, max: 20)]
     private ?int $seriesCibles = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 20)]
     private ?string $repsCibles = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Range(min: 0, max: 900)]
     private ?int $reposSecondes = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 1000)]
     private ?string $notes = null;
 
     #[ORM\ManyToOne(inversedBy: 'exerciceProgrammes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?JourProgramme $jourProgramme = null;
 
     #[ORM\ManyToOne(inversedBy: 'exerciceProgrammes')]

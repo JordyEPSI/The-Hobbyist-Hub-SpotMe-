@@ -15,4 +15,16 @@ class CommentaireRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Commentaire::class);
     }
+
+    // Tous les commentaires avec leur auteur et leur programme, en une seule requête (page de modération)
+    public function findTousAvecDetails(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('u', 'p')
+            ->join('c.utilisateur', 'u')
+            ->join('c.programme', 'p')
+            ->orderBy('c.dateCreation', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

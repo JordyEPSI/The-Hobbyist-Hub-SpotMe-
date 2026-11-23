@@ -1,0 +1,31 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}{{ exercice.id ? 'Modifier ' ~ exercice.nom : 'Nouvel exercice' }}{% endblock %}
+
+{% block admin_contenu %}
+    <p class="fil"><a href="{{ path('admin_exercice_liste') }}">← Exercices</a></p>
+    <h1>{{ exercice.id ? 'Modifier « ' ~ exercice.nom ~ ' »' : 'Nouvel exercice' }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {{ form_row(form.nom) }}
+        <div class="champs-ligne">
+            {{ form_row(form.materiel) }}
+            {{ form_row(form.difficulte) }}
+        </div>
+        {{ form_row(form.description) }}
+        {{ form_row(form.image) }}
+        <div class="champs-ligne">
+            <fieldset class="cases">
+                <legend>Muscles principaux</legend>
+                {{ form_errors(form.musclesPrincipaux) }}
+                {% for case in form.musclesPrincipaux %}{{ form_row(case) }}{% endfor %}
+            </fieldset>
+            <fieldset class="cases">
+                <legend>Muscles secondaires</legend>
+                {% for case in form.musclesSecondaires %}{{ form_row(case) }}{% endfor %}
+            </fieldset>
+        </div>
+        <button type="submit" class="bouton">Enregistrer</button>
+    {{ form_end(form) }}
+{% endblock %}

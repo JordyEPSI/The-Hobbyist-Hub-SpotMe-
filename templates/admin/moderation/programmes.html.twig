@@ -1,0 +1,32 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Programmes{% endblock %}
+
+{% block admin_contenu %}
+    <h1>Programmes ({{ programmes|length }})</h1>
+
+    <table class="tableau">
+        <thead>
+            <tr><th>Titre</th><th>Auteur</th><th>Visibilité</th><th>Créé le</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for programme in programmes %}
+                <tr>
+                    <td><a href="{{ path('app_programme_fiche', {slug: programme.slug}) }}">{{ programme.titre }}</a></td>
+                    <td>{{ programme.utilisateur.pseudo }}</td>
+                    <td>{{ programme.estPublic ? 'Public' : 'Privé' }}</td>
+                    <td>{{ programme.dateCreation|date('d/m/Y') }}</td>
+                    <td>
+                        <form method="post" action="{{ path('app_programme_supprimer', {slug: programme.slug}) }}"
+                              onsubmit="return confirm('Supprimer « {{ programme.titre|e('js') }} » ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('supprimer-programme-' ~ programme.id) }}">
+                            <button type="submit" class="bouton-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5">Aucun programme.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

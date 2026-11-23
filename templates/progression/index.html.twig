@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ma progression{% endblock %}
+
+{% block body %}
+    <header class="titre-page">
+        <h1>Ma progression</h1>
+        <p class="sous-titre">Charge maximale, 1RM estimé et volume, séance après séance.</p>
+    </header>
+
+    {% if exercices is empty %}
+        <div class="carte vide">
+            <p>Enregistre quelques séances pour voir tes courbes de progression.</p>
+            <a class="bouton" href="{{ path('app_seance_nouvelle') }}">Noter une séance</a>
+        </div>
+    {% else %}
+        <section class="carte" data-controller="progression">
+            <label for="choix-exercice">Exercice</label>
+            <select id="choix-exercice" data-progression-target="choix" data-action="progression#charger">
+                {% for exercice in exercices %}
+                    <option value="{{ exercice.id }}" data-url="{{ path('app_progression_donnees', {id: exercice.id}) }}">{{ exercice.nom }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="chiffres" data-progression-target="resume" aria-live="polite"></div>
+
+            <div class="graphiques">
+                <figure>
+                    <figcaption>Charge maximale et 1RM estimé (kg)</figcaption>
+                    <div class="graphique"><canvas data-progression-target="charge" role="img" aria-label="Évolution de la charge maximale et du 1RM estimé"></canvas></div>
+                </figure>
+                <figure>
+                    <figcaption>Volume par séance (kg × répétitions)</figcaption>
+                    <div class="graphique"><canvas data-progression-target="volume" role="img" aria-label="Évolution du volume par séance"></canvas></div>
+                </figure>
+            </div>
+            <p class="texte-doux">Le 1RM estimé (charge maximale sur une répétition) est calculé avec la formule d'Epley : charge × (1 + répétitions / 30).</p>
+        </section>
+    {% endif %}
+{% endblock %}

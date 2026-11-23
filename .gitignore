@@ -18,3 +18,8 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> SpotMe ###
+# Images des exercices générées par app:images:copier (WebP)
+/public/images/exercices/
+###< SpotMe ###

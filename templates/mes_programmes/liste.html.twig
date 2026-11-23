@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes programmes{% endblock %}
+
+{% block body %}
+    <header class="titre-page titre-page-actions">
+        <div>
+            <h1>Mes programmes</h1>
+            <p class="sous-titre">{{ programmes|length }} programme{{ programmes|length > 1 ? 's' }}</p>
+        </div>
+        <a class="bouton" href="{{ path('app_programme_nouveau') }}">+ Nouveau programme</a>
+    </header>
+
+    {% if programmes is empty %}
+        <p class="carte vide">Tu n'as pas encore de programme. Crée le premier !</p>
+    {% else %}
+        <ul class="grille grille-large">
+            {% for programme in programmes %}
+                <li>
+                    <a class="carte carte-programme" href="{{ path('app_programme_fiche', {slug: programme.slug}) }}">
+                        <strong class="carte-programme-titre">{{ programme.titre }}</strong>
+                        <span class="texte-doux">
+                            {{ programme.jourProgrammes|length }} jour{{ programme.jourProgrammes|length > 1 ? 's' }}
+                            · {{ programme.estPublic ? 'public' : 'privé' }}
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{# Une ligne d'exercice placée dans un jour. Sert aussi de modèle pour le JavaScript. #}
+{% macro ligne(exerciceId, nom, series, reps, repos) %}
+    <li class="ligne-programme" draggable="true"
+        data-action="dragstart->programme#prendreLigne dragend->programme#lacherLigne">
+        <input type="hidden" data-champ="exercice" value="{{ exerciceId }}">
+        <strong class="ligne-programme-nom" data-role="nom">{{ nom }}</strong>
+        <label>Séries <input type="number" data-champ="series" value="{{ series }}" min="1" max="20" required></label>
+        <label>Reps <input type="text" data-champ="reps" value="{{ reps }}" maxlength="20" required></label>
+        <label>Repos (s) <input type="number" data-champ="repos" value="{{ repos }}" min="0" max="900" required></label>
+        <button type="button" class="bouton-secondaire" data-action="programme#retirerLigne" aria-label="Retirer {{ nom }}">✕</button>
+    </li>
+{% endmacro %}
+
+{# Un jour du programme, avec sa zone où l'on dépose les exercices #}
+{% macro jour(nom, lignes) %}
+    {% import _self as macros %}
+    <section class="carte jour-construction" data-programme-target="jour">
+        <div class="jour-entete">
+            <input type="text" data-champ="nom" value="{{ nom }}" maxlength="50" required aria-label="Nom du jour">
+            <button type="button" class="bouton-danger" data-action="programme#retirerJour">Supprimer le jour</button>
+        </div>
+        <ol class="zone-depot" data-action="dragover->programme#survoler dragleave->programme#quitter drop->programme#deposer">
+            {%- for l in lignes -%}
+                {{ macros.ligne(l.exercice.id, l.exercice.nom, l.seriesCibles, l.repsCibles, l.reposSecondes) }}
+            {%- endfor -%}
+        </ol>
+    </section>
+{% endmacro %}
+
+{% block title %}Construire « {{ programme.titre }} »{% endblock %}
+
+{% block body %}
+    <p class="fil"><a href="{{ path('app_programme_fiche', {slug: programme.slug}) }}">← Retour au programme</a></p>
+
+    <header class="titre-page">
+        <h1>{{ programme.titre }}</h1>
+        <p class="sous-titre">Glisse les exercices de gauche dans les jours de ton programme. Tu peux aussi déplacer un exercice d'un jour à l'autre.</p>
+    </header>
+
+    <div class="construction" data-controller="programme" data-programme-max-jours-value="{{ max_jours }}">
+        <aside class="carte catalogue-construction">
+            <h2>Exercices</h2>
+            <ul>
+                {% for exercice in exercices %}
+                    <li class="exercice-catalogue" draggable="true" data-id="{{ exercice.id }}" data-nom="{{ exercice.nom }}"
+                        data-action="dragstart->programme#prendreDuCatalogue">
+                        {{ exercice.nom }}
+                        <span class="texte-doux">{{ exercice.materiel.nom }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <form method="post" action="{{ path('app_programme_construire', {slug: programme.slug}) }}"
+              data-action="submit->programme#nommerChamps">
+            <input type="hidden" name="_token" value="{{ csrf_token('construire-' ~ programme.id) }}">
+
+            <div data-programme-target="jours">
+                {% for jour in programme.jourProgrammes %}
+                    {{ _self.jour(jour.nom, jour.exerciceProgrammes) }}
+                {% endfor %}
+            </div>
+
+            <div class="actions">
+                <button type="button" class="bouton-secondaire" data-programme-target="boutonJour" data-action="programme#ajouterJour">+ Ajouter un jour</button>
+                <button type="submit" class="bouton">Enregistrer le programme</button>
+            </div>
+        </form>
+
+        {# Modèles copiés par le JavaScript quand on ajoute un jour ou un exercice #}
+        <template data-programme-target="modeleJour">{{ _self.jour('', []) }}</template>
+        <template data-programme-target="modeleLigne">{{ _self.ligne('', '', 3, '8-12', 90) }}</template>
+    </div>
+{% endblock %}

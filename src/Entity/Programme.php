@@ -7,9 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProgrammeRepository::class)]
+#[UniqueEntity(fields: ['slug'], message: 'Un programme porte déjà ce nom.')]
 class Programme
 {
     #[ORM\Id]
@@ -22,8 +24,8 @@ class Programme
     #[Assert\Length(max: 100)]
     private ?string $titre = null;
 
-    #[ORM\Column(length: 120)]
-    #[Assert\NotBlank]
+    // Calculé à partir du titre par GestionProgrammes, après la validation
+    #[ORM\Column(length: 120, unique: true)]
     #[Assert\Length(max: 120)]
     private ?string $slug = null;
 
@@ -76,6 +78,7 @@ class Programme
      * @var Collection<int, Commentaire>
      */
     #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'programme', orphanRemoval: true)]
+    #[ORM\OrderBy(['dateCreation' => 'DESC'])]
     private Collection $commentaires;
 
     public function __construct()
@@ -308,6 +311,34 @@ class Programme
         }
 
         return $this;
+    }
+
+    // Moyenne des notes sur 5, arrondie à 0,1 (null si aucune note)
+    public function getNoteMoyenne(): ?float
+    {
+        if ($this->notes->isEmpty()) {
+            return null;
+        }
+
+        $total = 0;
+        foreach ($this->notes as $note) {
+            $total += $note->getNote();
+        }
+
+        return round($total / count($this->notes), 1);
+    }
+
+    // Commentaires non masqués par la modération
+    public function getCommentairesVisibles(): array
+    {
+        $visibles = [];
+        foreach ($this->commentaires as $commentaire) {
+            if (!$commentaire->isEstMasque()) {
+                $visibles[] = $commentaire;
+            }
+        }
+
+        return $visibles;
     }
 
     public function __toString(): string

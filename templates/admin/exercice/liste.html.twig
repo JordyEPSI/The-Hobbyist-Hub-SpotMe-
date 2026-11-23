@@ -1,0 +1,47 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Exercices{% endblock %}
+
+{% block admin_contenu %}
+    <div class="titre-page-actions">
+        <h1>Exercices ({{ exercices|length }})</h1>
+        <div class="actions">
+            <a class="bouton-secondaire" href="{{ path('admin_wger') }}">Importer depuis wger</a>
+            <a class="bouton" href="{{ path('admin_exercice_nouveau') }}">+ Nouvel exercice</a>
+        </div>
+    </div>
+
+    <table class="tableau">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Matériel</th>
+                <th>Muscles principaux</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exercice in exercices %}
+                <tr>
+                    <td><a href="{{ path('app_exercice_fiche', {slug: exercice.slug}) }}">{{ exercice.nom }}</a></td>
+                    <td>{{ exercice.materiel.nom }}</td>
+                    <td>
+                        {% for cibler in exercice.ciblers %}
+                            {% if cibler.estPrincipal %}{{ cibler.groupeMusculaire.nom }} {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="actions">
+                        <a class="bouton-secondaire" href="{{ path('admin_exercice_modifier', {id: exercice.id}) }}">Modifier</a>
+                        <form method="post" action="{{ path('admin_exercice_supprimer', {id: exercice.id}) }}"
+                              onsubmit="return confirm('Supprimer « {{ exercice.nom|e('js') }} » ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('supprimer-exercice-' ~ exercice.id) }}">
+                            <button type="submit" class="bouton-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4">Aucun exercice. <a href="{{ path('admin_wger') }}">Importe-en depuis wger</a>.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

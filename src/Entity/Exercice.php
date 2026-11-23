@@ -7,9 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ExerciceRepository::class)]
+#[UniqueEntity(fields: ['slug'], message: 'Un exercice porte déjà ce nom.')]
+#[UniqueEntity(fields: ['idWger'], message: 'Cet exercice wger est déjà importé.')]
 class Exercice
 {
     #[ORM\Id]
@@ -22,8 +25,8 @@ class Exercice
     #[Assert\Length(max: 100)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 120)]
-    #[Assert\NotBlank]
+    // Calculé à partir du nom par CatalogueExercices, après la validation
+    #[ORM\Column(length: 120, unique: true)]
     #[Assert\Length(max: 120)]
     private ?string $slug = null;
 
@@ -38,7 +41,7 @@ class Exercice
     #[Assert\Length(max: 30)]
     private ?string $difficulte = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, unique: true)]
     #[Assert\Positive]
     private ?int $idWger = null;
 

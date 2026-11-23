@@ -1,0 +1,32 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Commentaires{% endblock %}
+
+{% block admin_contenu %}
+    <h1>Commentaires ({{ commentaires|length }})</h1>
+
+    <table class="tableau">
+        <thead>
+            <tr><th>Commentaire</th><th>Auteur</th><th>Programme</th><th>Date</th><th>Statut</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for commentaire in commentaires %}
+                <tr>
+                    <td>{{ commentaire.contenu|slice(0, 120) }}{% if commentaire.contenu|length > 120 %}...{% endif %}</td>
+                    <td>{{ commentaire.utilisateur.pseudo }}</td>
+                    <td><a href="{{ path('app_programme_fiche', {slug: commentaire.programme.slug}) }}">{{ commentaire.programme.titre }}</a></td>
+                    <td>{{ commentaire.dateCreation|date('d/m/Y') }}</td>
+                    <td>{{ commentaire.estMasque ? 'Masqué' : 'Visible' }}</td>
+                    <td>
+                        <form method="post" action="{{ path('admin_commentaire_masquer', {id: commentaire.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('masquer-' ~ commentaire.id) }}">
+                            <button type="submit" class="bouton-secondaire">{{ commentaire.estMasque ? 'Réafficher' : 'Masquer' }}</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6">Aucun commentaire.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

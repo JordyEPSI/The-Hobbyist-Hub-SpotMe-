@@ -3,7 +3,10 @@
 {% block title %}Utilisateurs{% endblock %}
 
 {% block admin_contenu %}
-    <h1>Utilisateurs</h1>
+    <div class="titre-page-actions">
+        <h1>Utilisateurs</h1>
+        <a class="bouton" href="{{ path('admin_utilisateur_nouveau') }}">+ Créer un compte</a>
+    </div>
 
     <table class="tableau">
         <thead>

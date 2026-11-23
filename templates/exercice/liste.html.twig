@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Exercices{% endblock %}
+{% block description %}Catalogue des exercices de musculation de SpotMe : muscles travaillés, matériel et consignes.{% endblock %}
+
+{% block body %}
+    <header class="titre-page">
+        <h1>Exercices</h1>
+        <p class="sous-titre">{{ exercices|length }} exercice{{ exercices|length > 1 ? 's' }}</p>
+    </header>
+
+    <form method="get" action="{{ path('app_exercice_liste') }}" class="carte filtres champs-ligne" role="search">
+        <div>
+            <label for="q">Rechercher</label>
+            <input type="text" id="q" name="q" value="{{ recherche }}" placeholder="Ex : squat">
+        </div>
+        <div>
+            <label for="groupe">Muscle</label>
+            <select id="groupe" name="groupe">
+                <option value="">Tous</option>
+                {% for g in groupes %}
+                    <option value="{{ g.slug }}" {{ g.slug == groupe ? 'selected' }}>{{ g.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="materiel">Matériel</label>
+            <select id="materiel" name="materiel">
+                <option value="">Tous</option>
+                {% for m in materiels %}
+                    <option value="{{ m.slug }}" {{ m.slug == materiel ? 'selected' }}>{{ m.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="actions">
+            <button type="submit" class="bouton">Filtrer</button>
+            {% if recherche or groupe or materiel %}
+                <a class="bouton-secondaire" href="{{ path('app_exercice_liste') }}">Tout afficher</a>
+            {% endif %}
+        </div>
+    </form>
+
+    {% if exercices is empty %}
+        <p class="carte vide">Aucun exercice ne correspond à ta recherche.</p>
+    {% else %}
+        <ul class="grille">
+            {% for exercice in exercices %}
+                <li>
+                    <a class="carte-exercice" href="{{ path('app_exercice_fiche', {slug: exercice.slug}) }}">
+                        {% if exercice.image %}
+                            <img src="{{ exercice.image }}" alt="" width="400" height="400" loading="lazy" decoding="async">
+                        {% else %}
+                            <span class="image-absente" aria-hidden="true">{{ exercice.nom|first|upper }}</span>
+                        {% endif %}
+                        <span class="carte-exercice-corps">
+                            <strong>{{ exercice.nom }}</strong>
+                            <span class="texte-doux">{{ exercice.materiel.nom }}</span>
+                            {{ include('exercice/_muscles.html.twig') }}
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

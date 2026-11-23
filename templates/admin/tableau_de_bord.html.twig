@@ -6,13 +6,22 @@
     <h1>Tableau de bord</h1>
 
     <div class="chiffres">
-        <div class="chiffre">
-            <span class="chiffre-valeur">{{ nb_utilisateurs }}</span>
-            <span class="chiffre-libelle">membres inscrits</span>
-        </div>
-        <div class="chiffre">
-            <span class="chiffre-valeur">{{ nb_admins }}</span>
-            <span class="chiffre-libelle">administrateurs</span>
-        </div>
+        {% for chiffre in [
+            {valeur: nb_utilisateurs, libelle: 'membres inscrits'},
+            {valeur: nb_admins, libelle: 'administrateurs'},
+            {valeur: nb_exercices, libelle: 'exercices au catalogue'},
+            {valeur: nb_programmes, libelle: 'programmes'},
+            {valeur: nb_seances, libelle: 'séances enregistrées'},
+            {valeur: nb_commentaires, libelle: 'commentaires'},
+        ] %}
+            <div class="chiffre">
+                <span class="chiffre-valeur">{{ chiffre.valeur }}</span>
+                <span class="chiffre-libelle">{{ chiffre.libelle }}</span>
+            </div>
+        {% endfor %}
     </div>
+
+    {% if nb_exercices == 0 %}
+        <p class="note">Le catalogue est vide : <a href="{{ path('admin_wger') }}">importe des exercices depuis wger</a>.</p>
+    {% endif %}
 {% endblock %}

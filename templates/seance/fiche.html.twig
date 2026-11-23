@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Séance du {{ seance.dateSeance|date('d/m/Y') }}{% endblock %}
+
+{% block body %}
+    <p class="fil"><a href="{{ path('app_seance_liste') }}">← Mes séances</a></p>
+
+    <article class="carte">
+        <header class="titre-page-actions">
+            <div>
+                <h1>Séance du {{ seance.dateSeance|date('d/m/Y') }}</h1>
+                <p class="texte-doux">
+                    {{ seance.series|length }} série{{ seance.series|length > 1 ? 's' }}
+                    · {{ seance.volumeTotal|number_format(0, ',', ' ') }} kg soulevés
+                    {% if seance.dureeMin %} · {{ seance.dureeMin }} min{% endif %}
+                    {% if seance.ressenti %} · {{ include('seance/_ressenti.html.twig')|trim }}{% endif %}
+                </p>
+            </div>
+            <div class="actions">
+                <a class="bouton-secondaire" href="{{ path('app_seance_modifier', {id: seance.id}) }}">Modifier</a>
+                <form method="post" action="{{ path('app_seance_supprimer', {id: seance.id}) }}" onsubmit="return confirm('Supprimer cette séance ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('supprimer-seance-' ~ seance.id) }}">
+                    <button type="submit" class="bouton-danger">Supprimer</button>
+                </form>
+            </div>
+        </header>
+
+        {% for groupe in seance.seriesParExercice %}
+            <section class="jour">
+                <h2><a href="{{ path('app_exercice_fiche', {slug: groupe.exercice.slug}) }}">{{ groupe.exercice.nom }}</a></h2>
+                <table class="tableau">
+                    <thead>
+                        <tr><th>Série</th><th>Répétitions</th><th>Charge</th><th>RPE</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for serie in groupe.series %}
+                            <tr>
+                                <td>{{ serie.numeroSerie }}</td>
+                                <td>{{ serie.repetitions }}</td>
+                                <td>{{ serie.chargeKg|number_format(1, ',') }} kg</td>
+                                <td>{{ serie.rpe }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% endfor %}
+
+        {% if seance.notes %}
+            <h2>Notes</h2>
+            <p class="description">{{ seance.notes|nl2br }}</p>
+        {% endif %}
+
+        <p><a href="{{ path('app_progression') }}">Voir ma progression →</a></p>
+    </article>
+{% endblock %}

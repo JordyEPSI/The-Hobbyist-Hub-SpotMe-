@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% set niveaux = {debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé'} %}
+
+{% block title %}Programmes{% endblock %}
+{% block description %}Les programmes de musculation partagés par la communauté SpotMe.{% endblock %}
+
+{% block body %}
+    <header class="titre-page">
+        <h1>Programmes de la communauté</h1>
+        <p class="sous-titre">Des programmes complets partagés par les membres.</p>
+    </header>
+
+    {% if programmes is empty %}
+        <p class="carte vide">Aucun programme public pour l'instant.</p>
+    {% else %}
+        <ul class="grille grille-large">
+            {% for programme in programmes %}
+                <li>
+                    <a class="carte carte-programme" href="{{ path('app_programme_fiche', {slug: programme.slug}) }}">
+                        <strong class="carte-programme-titre">{{ programme.titre }}</strong>
+                        <span class="texte-doux">par {{ programme.utilisateur.pseudo }}</span>
+                        <ul class="badges">
+                            {% if programme.niveau %}<li class="badge">{{ niveaux[programme.niveau] ?? programme.niveau }}</li>{% endif %}
+                            {% if programme.objectif %}<li class="badge">{{ programme.objectif }}</li>{% endif %}
+                            <li class="badge">{{ programme.jourProgrammes|length }} jour{{ programme.jourProgrammes|length > 1 ? 's' }}</li>
+                        </ul>
+                        {% if programme.noteMoyenne is not null %}
+                            <span class="note-moyenne">★ {{ programme.noteMoyenne|number_format(1, ',') }} / 5</span>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

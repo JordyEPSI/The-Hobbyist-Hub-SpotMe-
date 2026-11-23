@@ -1,0 +1,22 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Créer un compte{% endblock %}
+
+{% block admin_contenu %}
+    <p class="fil"><a href="{{ path('admin_utilisateur_liste') }}">← Utilisateurs</a></p>
+    <h1>Créer un compte</h1>
+
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {{ form_row(form.pseudo) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.motDePasseClair.first) }}
+        {{ form_row(form.motDePasseClair.second) }}
+        {{ form_errors(form.motDePasseClair) }}
+        <fieldset class="cases">
+            <legend>Rôle</legend>
+            {% for choix in form.role %}{{ form_row(choix) }}{% endfor %}
+        </fieldset>
+        <button type="submit" class="bouton">Créer le compte</button>
+    {{ form_end(form) }}
+{% endblock %}

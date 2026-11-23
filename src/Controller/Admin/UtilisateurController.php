@@ -3,11 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Utilisateur;
+use App\Form\CreationCompteType;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -20,6 +22,33 @@ class UtilisateurController extends AbstractController
     {
         return $this->render('admin/utilisateur/liste.html.twig', [
             'utilisateurs' => $utilisateurs->findTousParDateInscription(),
+        ]);
+    }
+
+    #[Route('/nouveau', name: 'admin_utilisateur_nouveau', methods: ['GET', 'POST'])]
+    public function nouveau(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): Response
+    {
+        $utilisateur = new Utilisateur();
+        $form = $this->createForm(CreationCompteType::class, $utilisateur);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $motDePasse = $form->get('motDePasseClair')->getData();
+            $utilisateur->setMotDePasse($hasher->hashPassword($utilisateur, $motDePasse));
+
+            if ($form->get('role')->getData() === 'admin') {
+                $utilisateur->setRoles(['ROLE_ADMIN']);
+            }
+
+            $em->persist($utilisateur);
+            $em->flush();
+            $this->addFlash('succes', 'Compte de '.$utilisateur->getPseudo().' créé.');
+
+            return $this->redirectToRoute('admin_utilisateur_liste');
+        }
+
+        return $this->render('admin/utilisateur/nouveau.html.twig', [
+            'form' => $form,
         ]);
     }
 

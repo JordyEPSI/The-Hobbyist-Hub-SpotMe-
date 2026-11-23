@@ -1,7 +1,7 @@
 # SpotMe
 
 Plateforme communautaire de musculation : création et partage de programmes, journal de séances et suivi de progression.
-Projet « The Hobbyist Hub » — Symfony 8.1, Doctrine, MySQL.
+Projet « The Hobbyist Hub » : Symfony 8.1, Doctrine, MySQL.
 
 ## Prérequis
 
@@ -30,6 +30,23 @@ php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 php bin/console app:creer-admin email@exemple.fr Pseudo
 ```
+
+Remplir le catalogue avec les 15 exercices classiques (squat, développé couché, soulevé de terre, tractions…) depuis l'API [wger](https://wger.de) :
+
+```bash
+php bin/console app:wger:importer
+php bin/console app:wger:importer --par-groupe=5 --anglais   # en plus : 5 exercices par groupe musculaire, même non traduits
+```
+
+On peut aussi importer exercice par exercice depuis le Back-Office (« Import wger »).
+
+Les images des exercices sont copiées sur le serveur en WebP allégé lors de l'import (éco-conception). Pour des exercices importés avant cette fonctionnalité :
+
+```bash
+php bin/console app:images:copier
+```
+
+L'extension PHP GD avec le support WebP est nécessaire (incluse dans XAMPP). Sans elle, les images restent chargées depuis wger.
 
 Lancer le serveur, puis ouvrir http://127.0.0.1:8000 :
 

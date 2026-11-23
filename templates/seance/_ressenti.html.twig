@@ -1,0 +1,1 @@
+{% set ressentis = {facile: 'Facile', correcte: 'Correcte', difficile: 'Difficile', epuisante: 'Épuisante'} %}{{ ressentis[seance.ressenti] ?? seance.ressenti }}

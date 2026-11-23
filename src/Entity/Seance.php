@@ -44,7 +44,9 @@ class Seance
     /**
      * @var Collection<int, Serie>
      */
-    #[ORM\OneToMany(targetEntity: Serie::class, mappedBy: 'seance', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Serie::class, mappedBy: 'seance', orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\OrderBy(['numeroSerie' => 'ASC'])]
+    #[Assert\Valid]
     private Collection $series;
 
     public function __construct()
@@ -156,6 +158,50 @@ class Seance
         }
 
         return $this;
+    }
+
+    // Numérote les séries de chaque exercice dans l'ordre de saisie : 1, 2, 3...
+    public function numeroterSeries(): void
+    {
+        $compteurs = [];
+        foreach ($this->series as $serie) {
+            $cle = 0;
+            if ($serie->getExercice() !== null) {
+                $cle = $serie->getExercice()->getId();
+            }
+
+            if (!isset($compteurs[$cle])) {
+                $compteurs[$cle] = 0;
+            }
+            $compteurs[$cle]++;
+            $serie->setNumeroSerie($compteurs[$cle]);
+        }
+    }
+
+    // Regroupe les séries par exercice, pour l'affichage
+    public function getSeriesParExercice(): array
+    {
+        $groupes = [];
+        foreach ($this->series as $serie) {
+            $id = $serie->getExercice()->getId();
+            if (!isset($groupes[$id])) {
+                $groupes[$id] = ['exercice' => $serie->getExercice(), 'series' => []];
+            }
+            $groupes[$id]['series'][] = $serie;
+        }
+
+        return array_values($groupes);
+    }
+
+    // Volume de la séance : somme de répétitions x charge
+    public function getVolumeTotal(): float
+    {
+        $volume = 0;
+        foreach ($this->series as $serie) {
+            $volume = $volume + $serie->getRepetitions() * $serie->getChargeKg();
+        }
+
+        return $volume;
     }
 
     public function __toString(): string

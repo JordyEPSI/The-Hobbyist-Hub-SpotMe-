@@ -2,11 +2,20 @@
 
 {% block body %}
     <div class="admin">
-        <aside class="admin-menu">
+        <nav class="admin-menu" aria-label="Back-Office">
             <p class="admin-titre">Back-Office</p>
-            <a href="{{ path('admin_tableau_de_bord') }}">Tableau de bord</a>
-            <a href="{{ path('admin_utilisateur_liste') }}">Utilisateurs</a>
-        </aside>
+            {% set route = app.request.attributes.get('_route') %}
+            {% for lien in [
+                {route: 'admin_tableau_de_bord', libelle: 'Tableau de bord', prefixe: 'admin_tableau'},
+                {route: 'admin_exercice_liste', libelle: 'Exercices', prefixe: 'admin_exercice'},
+                {route: 'admin_wger', libelle: 'Import wger', prefixe: 'admin_wger'},
+                {route: 'admin_programme_liste', libelle: 'Programmes', prefixe: 'admin_programme'},
+                {route: 'admin_commentaire_liste', libelle: 'Commentaires', prefixe: 'admin_commentaire'},
+                {route: 'admin_utilisateur_liste', libelle: 'Utilisateurs', prefixe: 'admin_utilisateur'},
+            ] %}
+                <a href="{{ path(lien.route) }}" {% if route starts with lien.prefixe %}aria-current="page"{% endif %}>{{ lien.libelle }}</a>
+            {% endfor %}
+        </nav>
         <section class="admin-contenu">
             {% block admin_contenu %}{% endblock %}
         </section>

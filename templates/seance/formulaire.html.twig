@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% macro ligne_serie(serie) %}
+    <li class="ligne-serie" data-collection-target="ligne">
+        {{ form_row(serie.exercice) }}
+        {{ form_row(serie.repetitions) }}
+        {{ form_row(serie.chargeKg) }}
+        {{ form_row(serie.rpe) }}
+        <button type="button" class="bouton-secondaire bouton-retirer" data-action="collection#retirer" aria-label="Retirer cette série">✕</button>
+    </li>
+{% endmacro %}
+
+{% block title %}{{ seance.id ? 'Modifier la séance' : 'Nouvelle séance' }}{% endblock %}
+
+{% block body %}
+    <p class="fil"><a href="{{ path('app_seance_liste') }}">← Mes séances</a></p>
+
+    <section class="carte">
+        <h1>{{ seance.id ? 'Modifier la séance' : 'Nouvelle séance' }}</h1>
+
+        {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="champs-ligne">
+                {{ form_row(form.dateSeance) }}
+                {{ form_row(form.dureeMin) }}
+                {{ form_row(form.ressenti) }}
+            </div>
+
+            <h2>Séries</h2>
+            <p class="texte-doux">Une ligne par série. « Ajouter une série » reprend l'exercice et la charge de la ligne précédente.</p>
+
+            <div data-controller="collection"
+                 data-collection-prototype-value="{{ _self.ligne_serie(form.series.vars.prototype)|e('html_attr') }}"
+                 data-collection-index-value="{{ form.series|length > 0 ? max(form.series|keys) + 1 : 0 }}">
+                {{ form_errors(form.series) }}
+                <ol class="liste-series" data-collection-target="liste">
+                    {% for serie in form.series %}
+                        {{ _self.ligne_serie(serie) }}
+                    {% endfor %}
+                </ol>
+                <button type="button" class="bouton-secondaire" data-action="collection#ajouter">+ Ajouter une série</button>
+            </div>
+
+            {{ form_row(form.notes) }}
+
+            <button type="submit" class="bouton">Enregistrer la séance</button>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

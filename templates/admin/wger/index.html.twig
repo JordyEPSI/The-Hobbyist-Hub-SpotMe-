@@ -1,0 +1,84 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Import wger{% endblock %}
+
+{% block admin_contenu %}
+    <h1>Importer depuis wger</h1>
+    <p class="texte-doux">
+        <a href="https://wger.de" rel="noopener">wger</a> est une base d'exercices libre (CC-BY-SA).
+        Choisis un groupe musculaire, coche les exercices voulus, puis importe-les dans le catalogue SpotMe.
+    </p>
+
+    <form method="get" action="{{ path('admin_wger') }}" class="champs-ligne filtres">
+        <div>
+            <label for="groupe">Groupe musculaire</label>
+            <select id="groupe" name="groupe" required>
+                <option value="">Choisis un groupe</option>
+                {% for slug, nom in groupes %}
+                    <option value="{{ slug }}" {{ slug == groupe ? 'selected' }}>{{ nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="materiel">Matériel</label>
+            <select id="materiel" name="materiel">
+                <option value="">Tous</option>
+                {% for slug, nom in materiels %}
+                    <option value="{{ slug }}" {{ slug == materiel ? 'selected' }}>{{ nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div><button type="submit" class="bouton">Rechercher</button></div>
+    </form>
+
+    {% if groupe %}
+        {% if resultats is empty %}
+            <p>Aucun exercice trouvé sur wger pour cette recherche.</p>
+        {% else %}
+            <form method="post" action="{{ path('admin_wger_importer') }}" data-controller="selection">
+                <input type="hidden" name="_token" value="{{ csrf_token('import-wger') }}">
+                <input type="hidden" name="groupe" value="{{ groupe }}">
+                <input type="hidden" name="materiel" value="{{ materiel }}">
+
+                <div class="titre-page-actions">
+                    <p>{{ resultats|length }} résultat{{ resultats|length > 1 ? 's' }} · <span data-selection-target="compteur">0</span> sélectionné(s)</p>
+                    <div class="actions">
+                        <button type="button" class="bouton-secondaire" data-action="selection#toutCocher">Tout cocher (en français)</button>
+                        <button type="submit" class="bouton">Importer la sélection</button>
+                    </div>
+                </div>
+
+                <table class="tableau">
+                    <thead>
+                        <tr><th><span class="visuellement-cache">Choisir</span></th><th>Image</th><th>Nom</th><th>Matériel</th><th>Muscles</th><th>Statut</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for e in resultats %}
+                            {% set deja = e.idWger in importes %}
+                            <tr>
+                                <td>
+                                    {% if not deja %}
+                                        <input type="checkbox" name="ids[]" value="{{ e.idWger }}" id="wger-{{ e.idWger }}"
+                                               data-selection-target="case" data-francais="{{ e.estEnFrancais ? 1 : 0 }}" data-action="selection#compter">
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if e.image %}<img src="{{ e.image }}" alt="" width="56" height="56" loading="lazy" class="miniature">{% endif %}
+                                </td>
+                                <td>
+                                    <label for="wger-{{ e.idWger }}" class="label-tableau">{{ e.nom }}</label>
+                                    {% if not e.estEnFrancais %}<span class="badge">EN</span>{% endif %}
+                                </td>
+                                <td>{{ materiels[e.materiel] }}</td>
+                                <td>
+                                    {% for muscle in e.musclesPrincipaux %}{{ groupes[muscle] }} {% endfor %}
+                                </td>
+                                <td>{{ deja ? '✓ déjà importé' : '' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        {% endif %}
+    {% endif %}
+{% endblock %}

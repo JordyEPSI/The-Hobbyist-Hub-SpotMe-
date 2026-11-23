@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ programme.id ? 'Modifier le programme' : 'Nouveau programme' }}{% endblock %}
+
+{% block body %}
+    <p class="fil"><a href="{{ path('app_mes_programmes') }}">← Mes programmes</a></p>
+
+    <section class="carte carte-formulaire">
+        <h1>{{ programme.id ? 'Modifier le programme' : 'Nouveau programme' }}</h1>
+
+        {{ form_start(form) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.titre) }}
+            {{ form_row(form.objectif) }}
+            {{ form_row(form.niveau) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.estPublic, {label_attr: {class: 'case'}}) }}
+            <button type="submit" class="bouton">{{ programme.id ? 'Enregistrer' : 'Continuer' }}</button>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

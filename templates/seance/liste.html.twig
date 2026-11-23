@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes séances{% endblock %}
+
+{% block body %}
+    <header class="titre-page titre-page-actions">
+        <div>
+            <h1>Mes séances</h1>
+            <p class="sous-titre">{{ seances|length }} séance{{ seances|length > 1 ? 's' }} enregistrée{{ seances|length > 1 ? 's' }}</p>
+        </div>
+        <a class="bouton" href="{{ path('app_seance_nouvelle') }}">+ Nouvelle séance</a>
+    </header>
+
+    {% if seances is empty %}
+        <div class="carte vide">
+            <p>Ton journal est vide. Note ta première séance pour suivre ta progression !</p>
+        </div>
+    {% else %}
+        <ul class="liste-seances">
+            {% for seance in seances %}
+                {% set groupes = seance.seriesParExercice %}
+                <li>
+                    <a class="carte carte-seance" href="{{ path('app_seance_fiche', {id: seance.id}) }}">
+                        <time datetime="{{ seance.dateSeance|date('Y-m-d') }}" class="carte-seance-date">{{ seance.dateSeance|date('d/m/Y') }}</time>
+                        <span>
+                            {% for groupe in groupes %}{{ groupe.exercice.nom }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        </span>
+                        <span class="texte-doux">
+                            {{ seance.series|length }} série{{ seance.series|length > 1 ? 's' }}
+                            · {{ seance.volumeTotal|number_format(0, ',', ' ') }} kg soulevés
+                            {% if seance.dureeMin %} · {{ seance.dureeMin }} min{% endif %}
+                            {% if seance.ressenti %} · {{ include('seance/_ressenti.html.twig')|trim }}{% endif %}
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

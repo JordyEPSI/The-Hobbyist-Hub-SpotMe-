@@ -16,8 +16,14 @@
     <body>
         <header class="entete">
             <a class="logo" href="{{ path('app_accueil') }}">SpotMe</a>
-            <nav class="nav">
+            <nav class="nav" aria-label="Navigation principale">
+                {% set route = app.request.attributes.get('_route') ?? '' %}
+                <a href="{{ path('app_exercice_liste') }}" {% if route starts with 'app_exercice' %}aria-current="page"{% endif %}>Exercices</a>
+                <a href="{{ path('app_programme_liste') }}" {% if route == 'app_programme_liste' or route == 'app_programme_fiche' %}aria-current="page"{% endif %}>Programmes</a>
                 {% if app.user %}
+                    <a href="{{ path('app_mes_programmes') }}" {% if route in ['app_mes_programmes', 'app_programme_nouveau', 'app_programme_modifier', 'app_programme_construire'] %}aria-current="page"{% endif %}>Mes programmes</a>
+                    <a href="{{ path('app_seance_liste') }}" {% if route starts with 'app_seance' %}aria-current="page"{% endif %}>Mes séances</a>
+                    <a href="{{ path('app_progression') }}" {% if route starts with 'app_progression' %}aria-current="page"{% endif %}>Progression</a>
                     {% if is_granted('ROLE_ADMIN') %}
                         <a href="{{ path('admin_tableau_de_bord') }}">Administration</a>
                     {% endif %}

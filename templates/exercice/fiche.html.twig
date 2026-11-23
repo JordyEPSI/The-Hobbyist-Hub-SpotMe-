@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% set difficultes = {debutant: 'Débutant', intermediaire: 'Intermédiaire', avance: 'Avancé'} %}
+
+{% block title %}{{ exercice.nom }}{% endblock %}
+{% block description %}{{ exercice.nom }} : muscles travaillés, matériel et consignes d'exécution sur SpotMe.{% endblock %}
+
+{% block body %}
+    <p class="fil"><a href="{{ path('app_exercice_liste') }}">← Tous les exercices</a></p>
+
+    <article class="carte fiche">
+        <div class="fiche-media">
+            {% if exercice.image %}
+                <img src="{{ exercice.image }}" alt="Démonstration : {{ exercice.nom }}" width="400" height="400">
+            {% else %}
+                <span class="image-absente" aria-hidden="true">{{ exercice.nom|first|upper }}</span>
+            {% endif %}
+        </div>
+
+        <div class="fiche-texte">
+            <h1>{{ exercice.nom }}</h1>
+
+            <dl class="infos">
+                <dt>Matériel</dt>
+                <dd>{{ exercice.materiel.nom }}</dd>
+                {% if exercice.difficulte %}
+                    <dt>Difficulté</dt>
+                    <dd>{{ difficultes[exercice.difficulte] ?? exercice.difficulte }}</dd>
+                {% endif %}
+            </dl>
+
+            <h2>Muscles travaillés</h2>
+            {{ include('exercice/_muscles.html.twig', {secondaires: true}) }}
+            <p class="legende"><span class="badge badge-principal">principal</span> <span class="badge">secondaire</span></p>
+
+            <h2>Exécution</h2>
+            {% if exercice.description %}
+                <p class="description">{{ exercice.description|nl2br }}</p>
+            {% else %}
+                <p class="texte-doux">Pas encore de consignes pour cet exercice.</p>
+            {% endif %}
+
+            {% if app.user %}
+                <a class="bouton" href="{{ path('app_seance_nouvelle') }}">Noter une séance</a>
+            {% endif %}
+        </div>
+    </article>
+{% endblock %}

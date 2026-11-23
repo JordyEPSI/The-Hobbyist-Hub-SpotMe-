@@ -1,0 +1,9 @@
+<ul class="badges">
+    {% for cibler in exercice.ciblers %}
+        {% if cibler.estPrincipal %}
+            <li class="badge badge-principal">{{ cibler.groupeMusculaire.nom }}</li>
+        {% elseif secondaires ?? false %}
+            <li class="badge">{{ cibler.groupeMusculaire.nom }}</li>
+        {% endif %}
+    {% endfor %}
+</ul>
